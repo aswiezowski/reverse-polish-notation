@@ -3,28 +3,43 @@ import re
 
 class Element:
 
-    def __init__(self):
-        self.value = ''
+    def __init__(self, value):
+        self._value = value
+    
+    @property
+    def number_value(self):
+        return self._value
 
 class NumberElement(Element):
 
-    def __init__(self):
-            Element.__init__(self)
+    def __init__(self, number_value):
+        Element.__init__(self,number_value)
 
 class OpertatorElement(Element):
 
-    def __init__(self):
-            Element.__init__(self)
+    def __init__(self, value):
+        Element.__init__(self, value)
 
-class ReversePolishNotation:
+class ReversePolishNotationExpression:
+
+    def __init__(self, rpn):
+        self.rpn = rpn
+    
+    def print(self):
+        print(self.rpn)
+
+class AlgebraicExpressionParser:
 
     operators = {"^": 3, "*": 2, "/": 2, "%": 2, "+": 1, "-": 1, "(": 0}
     digit_pattern = re.compile("\\w")
 
-    def convert_to_rpn(self, algebraic_expression):
+    def __init__(self, algebraic_expression):
+        self.algebraic_expression = algebraic_expression
+
+    def convert_to_rpn(self):
         output = ""
         operators_stack = []
-        for element in algebraic_expression:
+        for element in self.algebraic_expression:
             if self.digit_pattern.match(element):
                 output += element
             elif element == "(":
@@ -46,7 +61,8 @@ class ReversePolishNotation:
             if operator == "(":
                 print("Incorrect expression syntax. End brace not found")
             output += " "+operator
-        return output
+        return ReversePolishNotationExpression(output)
 
 algebraic_expression = input("Enter algebraic expression: ")
-print(ReversePolishNotation().convert_to_rpn(algebraic_expression))
+rpn_expression = AlgebraicExpressionParser(algebraic_expression).convert_to_rpn()
+rpn_expression.print()
