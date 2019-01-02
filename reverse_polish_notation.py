@@ -70,7 +70,8 @@ class ReversePolishNotationExpression:
 
 class AlgebraicExpressionParser:
 
-    operators = {"^": 3, "*": 2, "/": 2, "%": 2, "+": 1, "-": 1, "(": 0}
+    left_brace = "("
+    operators = {"^": 3, "*": 2, "/": 2, "%": 2, "+": 1, "-": 1, left_brace: 0}
     digit_pattern = re.compile("[\\w\\.]")
 
     def __init__(self, algebraic_expression):
@@ -86,10 +87,10 @@ class AlgebraicExpressionParser:
                 numeric_symbol = ''
             if self.digit_pattern.match(element):
                 numeric_symbol += element
-            elif element == "(":
+            elif element == self.left_brace:
                 operators_stack.append(element)
             elif element == ")":
-                while operators_stack[-1] != "(":
+                while operators_stack[-1] != self.left_brace:
                     elements.append(OperatorElement(operators_stack.pop()))
                 operators_stack.pop()
             elif element in self.operators:
@@ -100,13 +101,14 @@ class AlgebraicExpressionParser:
 
         if len(numeric_symbol) != 0:
             elements.append(NumberElement(numeric_symbol))
+ 
         while len(operators_stack) > 0:
             operator = operators_stack.pop()
             if operator == "(":
-                print("Incorrect expression syntax. End brace not found")
+                raise RuntimeError("Incorrect expression syntax. End brace not found")
             elements.append(OperatorElement(operator))
+        
         return ReversePolishNotationExpression(elements)
-
 
 if __name__ == '__main__':
     algebraic_expression = input("Enter algebraic expression: ")
